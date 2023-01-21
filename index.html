@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Document</title>
+</head>
+
+<body style="background:#f2eee5;margin:0;padding:0;">
+    <svg id="floorplan" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg"
+        style="z-index:2;margin:0;padding:0;width:100vw;height:100vh;position:absolute;top:0;left:0;right:0;bottom:0">
+        <defs>
+            <pattern id="smallGrid" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#777" stroke-width="0.25" />
+            </pattern>
+            <pattern id="grid" width="180" height="180" patternUnits="userSpaceOnUse">
+                <rect width="180" height="180" fill="url(#smallGrid)" />
+                <path
+                    d="M 200 10 L 200 0 L 190 0 M 0 10 L 0 0 L 10 0 M 0 190 L 0 200 L 10 200 M 190 200 L 200 200 L 200 190"
+                    fill="none" stroke="#999" stroke-width="0.8" />
+            </pattern>
+        </defs>
+        <g id="boxgrid">
+            <rect width="8000" height="5000" x="-3500" y="-2000" fill="url(#grid)" />
+        </g>
+    </svg>
+    <div class="controls">
+        <button id="zoom-in">+</button>
+        <button id="zoom-out">-</button>
+    </div>
+</body>
+<script src="main.js"></script>
+
+</html>
