@@ -73,13 +73,13 @@ let points = ""; // variable global para almacenar las coordenadas de los puntos
 floorplan.addEventListener("click", function (event) {
     // si no existen coordenadas iniciales, las guardamos
     if (!startCoords) {
-        startCoords = { x: event.clientX, y: event.clientY };
-        points += `${event.clientX},${event.clientY} `;
+        startCoords = { x: event.offsetX, y: event.offsetY };
+        points += `${event.offsetX},${event.offsetY} `;
         return;
     }
 
     // si el último punto es igual al primero
-    if (startCoords.x === event.clientX && startCoords.y === event.clientY) {
+    if (startCoords.x === event.offsetX && startCoords.y === event.offsetY) {
         // creamos un elemento polígono
         const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
         // asignamos las coordenadas de los puntos del polígono
@@ -93,17 +93,21 @@ floorplan.addEventListener("click", function (event) {
 
     //creamos un elemento line
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    // agregamos el atributo stroke para dar color a las lineas
+    line.setAttribute("stroke", "black");
+    // agregamos el atributo stroke-width para dar grosor a las lineas
+    line.setAttribute("stroke-width", "2");
 
-    // asignamos las coordenadas iniciales y finales
+    // asignamos las coordenadas iniciales y finales utilizando offsetX y offsetY
     line.setAttribute("x1", startCoords.x);
     line.setAttribute("y1", startCoords.y);
-    line.setAttribute("x2", event.clientX);
-    line.setAttribute("y2", event.clientY);
+    line.setAttribute("x2", event.offsetX);
+    line.setAttribute("y2", event.offsetY);
 
     // agregamos el elemento line al canvas
     floorplan.appendChild(line);
 
     // actualizamos las coordenadas iniciales
-    startCoords = { x: event.clientX, y: event.clientY };
-    points += `${event.clientX},${event.clientY} `;
+    startCoords = { x: event.offsetX, y: event.offsetY };
+    points += `${event.offsetX},${event.offsetY}`;
 });
