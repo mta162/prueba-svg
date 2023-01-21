@@ -64,50 +64,49 @@ zoomOutBtn.addEventListener("click", function () {
 
 /*HACER ZOOM IN Y ZOOM OUT EN EL PLANO - FIN*/
 
-
 /*DIBUJAR LINEA*/
-let startCoords; // variable global para almacenar las coordenadas iniciales
-let points = ""; // variable global para almacenar las coordenadas de los puntos del polígono
+let startCoords = null;
+let points = "";
 
-// evento click sobre el canvas
-floorplan.addEventListener("click", function (event) {
-    // si no existen coordenadas iniciales, las guardamos
+// get the viewbox values
+let viewBox2 = floorplan.getAttribute("viewBox").split(" ");
+let x = parseFloat(viewBox2[0]);
+let y = parseFloat(viewBox2[1]);
+let width = parseFloat(viewBox2[2]);
+let height = parseFloat(viewBox2[3]);
+
+floorplan.addEventListener("click", event => {
     if (!startCoords) {
-        startCoords = { x: event.offsetX, y: event.offsetY };
-        points += `${event.offsetX},${event.offsetY} `;
+        // calculate the point coordinates based on the viewbox
+        let xCoord = event.offsetX * width / floorplan.clientWidth + x;
+        let yCoord = event.offsetY * height / floorplan.clientHeight + y;
+        startCoords = { x: xCoord, y: yCoord };
+        points += `${xCoord},${yCoord}`;
         return;
     }
 
-    // si el último punto es igual al primero
-    if (startCoords.x === event.offsetX && startCoords.y === event.offsetY) {
-        // creamos un elemento polígono
+    if (startCoords.x === event.offsetX + event.target.getBoundingClientRect().x && startCoords.y === event.offsetY + event.target.getBoundingClientRect().y) {
         const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        // asignamos las coordenadas de los puntos del polígono
         polygon.setAttribute("points", points);
-        // agregamos el elemento polígono al canvas
         floorplan.appendChild(polygon);
         startCoords = null;
         points = "";
         return;
     }
 
-    //creamos un elemento line
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    // agregamos el atributo stroke para dar color a las lineas
     line.setAttribute("stroke", "black");
-    // agregamos el atributo stroke-width para dar grosor a las lineas
     line.setAttribute("stroke-width", "2");
 
-    // asignamos las coordenadas iniciales y finales utilizando offsetX y offsetY
+    // calculate the point coordinates based on the viewbox
+    let xCoord = (event.offsetX + event.target.getBoundingClientRect().x) * width / floorplan.clientWidth + x;
+    let yCoord = (event.offsetY + event.target.getBoundingClientRect().y) * height / floorplan.clientHeight + y;
     line.setAttribute("x1", startCoords.x);
     line.setAttribute("y1", startCoords.y);
-    line.setAttribute("x2", event.offsetX);
-    line.setAttribute("y2", event.offsetY);
-
-    // agregamos el elemento line al canvas
+    line.setAttribute("x2", xCoord);
+    line.setAttribute("y2", yCoord);
     floorplan.appendChild(line);
 
-    // actualizamos las coordenadas iniciales
-    startCoords = { x: event.offsetX, y: event.offsetY };
-    points += `${event.offsetX},${event.offsetY}`;
+    startCoords = { x: xCoord, y: yCoord };
+    points += `${xCoord},${yCoord} `;
 });
