@@ -65,6 +65,7 @@ zoomOutBtn.addEventListener("click", function () {
 /*HACER ZOOM IN Y ZOOM OUT EN EL PLANO - FIN*/
 
 let startCoords = null;
+let nextCoord = null;
 let points = [];
 let tempLine = null;
 
@@ -99,23 +100,23 @@ floorplan.addEventListener("click", event => {
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
         line.setAttribute("x1", startCoords.x);
         line.setAttribute("y1", startCoords.y);
-        line.setAttribute("x2", svgCoords.x);
-        line.setAttribute("y2", svgCoords.y);
+        line.setAttribute("x2", nextCoord.x);
+        line.setAttribute("y2", nextCoord.y);
         line.setAttribute("stroke", "black");
         line.setAttribute("stroke-width", "2");
         floorplan.appendChild(line);
         // add the point to the points string
-        points.push(`${svgCoords.x},${svgCoords.y}`);
+        points.push(`${nextCoord.x},${nextCoord.y}`);
         // update the starting coordinates
-        startCoords = { x: svgCoords.x, y: svgCoords.y };
+        startCoords = { x: nextCoord.x, y: nextCoord.y };
         // remove the temporary line
         if (tempLine) {
             tempLine.remove();
             tempLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            tempLine.setAttribute("x1", svgCoords.x);
-            tempLine.setAttribute("y1", svgCoords.y);
-            tempLine.setAttribute("x2", svgCoords.x);
-            tempLine.setAttribute("y2", svgCoords.y);
+            tempLine.setAttribute("x1", nextCoord.x);
+            tempLine.setAttribute("y1", nextCoord.y);
+            tempLine.setAttribute("x2", nextCoord.x);
+            tempLine.setAttribute("y2", nextCoord.y);
             tempLine.setAttribute("stroke", "black");
             tempLine.setAttribute("stroke-width", "2");
             tempLine.setAttribute("stroke-dasharray", "5,5");
@@ -131,9 +132,38 @@ floorplan.addEventListener("mousemove", event => {
         svgCoords.x = event.clientX;
         svgCoords.y = event.clientY;
         svgCoords = svgCoords.matrixTransform(matrix);
+
+        let angle = Math.atan2(svgCoords.y - startCoords.y, svgCoords.x - startCoords.x);
+        angle = angle * (180 / Math.PI);
+        let x2 = svgCoords.x, y2 = svgCoords.y;
+
+        const tolerance = 10;
+        console.log(angle, Math.abs(angle % 90)) //
+        if (Math.abs(angle % 90) < tolerance || Math.abs(angle % 90) >= 90 - tolerance) {
+            angle = Math.round(angle / 90) * 90;
+            // update the ending coordinates of the temporary line accordingly
+            if (angle === 0) {
+                x2 = svgCoords.x;
+                y2 = startCoords.y;
+            } else if (angle === 90) {
+                x2 = startCoords.x;
+                y2 = svgCoords.y;
+            } else if (angle === 180 || angle === -180) {
+                x2 = svgCoords.x;
+                y2 = startCoords.y;
+            } else if (angle === -90) {
+                x2 = startCoords.x;
+                y2 = svgCoords.y;
+            }
+            tempLine.setAttribute("stroke", "orange");
+        } else {
+            tempLine.setAttribute("stroke", "black");
+        }
+
         // update the ending coordinates of the temporary line
-        tempLine.setAttribute("x2", svgCoords.x);
-        tempLine.setAttribute("y2", svgCoords.y);
+        nextCoord = { x: x2, y: y2 };
+        tempLine.setAttribute("x2", x2);
+        tempLine.setAttribute("y2", y2);
     }
 });
 
